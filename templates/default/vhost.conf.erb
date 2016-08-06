@@ -1,0 +1,24 @@
+<VirtualHost *:80>
+  DocumentRoot /usr/local/waftest
+  <Directory /usr/local/waftest>
+    Order allow,deny
+    Allow from all
+    Require all granted
+  </Directory>
+</VirtualHost>
+<VirtualHost *:443>
+  DocumentRoot /usr/local/waftest
+  SecRuleEngine <%= node['waf_testbed']['engine_mode'] %>
+  SSLEngine on
+  SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+  BrowserMatch "MSIE [2-6]" \
+    nokeepalive ssl-unclean-shutdown \
+    downgrade-1.0 force-response-1.0
+  BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+  <Directory /usr/local/waftest>
+    Order allow,deny
+    Allow from all
+    Require all granted
+  </Directory>
+</VirtualHost>

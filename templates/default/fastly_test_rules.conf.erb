@@ -1,0 +1,10 @@
+#
+# Define something that can be easily tested just to make sure the engine
+# is running and the rules are being loaded properly (and functioning).
+#
+SecRule REQUEST_METHOD "!@rx ^(POST|GET)" \
+	"msg:'WAF testing: something other than POST/GET was used',\
+	id:343432,\
+	phase:1,\
+	logdata:'WAF testing: Got unauthorized method: %{REQUEST_METHOD}',\
+	deny,

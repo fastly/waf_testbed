@@ -1,0 +1,10 @@
+name 'waf_testbed'
+maintainer 'Team Security'
+maintainer_email 'team-security@fastly.com'
+license 'apache'
+description 'Installs/Configures waf_testbed'
+long_description 'Installs/Configures waf_testbed'
+version '0.1.0'
+
+depends 'apt', '~> 3.0.0'
+depends 'httpd'

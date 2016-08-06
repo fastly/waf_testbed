@@ -1,0 +1,97 @@
+# ---------------------------------------------------------------
+# Core ModSecurity Rule Set ver.3.0.0
+# Copyright (C) 2006-2016 Trustwave All rights reserved.
+#
+# The OWASP ModSecurity Core Rule Set is distributed under 
+# Apache Software License (ASL) version 2
+# Please see the enclosed LICENCE file for full details.
+# ---------------------------------------------------------------
+
+#
+# -= Paranoia Level 0 (empty) =- (apply unconditionally)
+#
+
+
+
+SecRule TX:PARANOIA_LEVEL "@lt 1" "phase:1,id:932011,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+SecRule TX:PARANOIA_LEVEL "@lt 1" "phase:2,id:932012,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+#
+# -= Paranoia Level 1 (default) =- (apply only when tx.paranoia_level is sufficiently high: 1 or higher)
+#
+
+#
+# OS Command Injection Attacks
+#
+# -=[ Rule Logic ]=-
+# These rules look for attempts to access OS commands such as curl, wget and cc
+# These commands are often used in injection attacks to force the victim web
+# application to initiate a connection out to a hacker site to download, compile
+# and install malicious toolkits such as those to participate in Botnets.
+#
+# -=[ References ]=- 
+# http://projects.webappsec.org/OS-Commanding
+# http://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project
+#
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "@pmf /etc/modsecurity/os-commands.data" \
+	"msg:'Remote Command Execution (RCE) Attempt',\
+	phase:request,\
+	rev:'2',\
+	ver:'OWASP_CRS/3.0.0',\
+	maturity:'9',\
+	accuracy:'8',\
+	capture,\
+	t:none,t:normalisePath,\
+	ctl:auditLogParts=+E,\
+	block,\
+	id:932100,\
+	tag:'application-multi',\
+	tag:'language-multi',\
+	tag:'platform-multi',\
+	tag:'attack-rce',\
+	tag:'OWASP_CRS/WEB_ATTACK/COMMAND_INJECTION',\
+	tag:'WASCTC/WASC-31',\
+	tag:'OWASP_TOP_10/A1',\
+	tag:'PCI/6.5.2',\
+	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
+	severity:'CRITICAL',\
+	chain"
+		SecRule MATCHED_VARS "@rx [`;\|&\r\n].*?(\.exe)?(\s+[-/])?.+[&<>\|]*?" \
+			"capture,\
+			setvar:'tx.msg=%{rule.msg}',\
+        		setvar:tx.rce_score=+%{tx.critical_anomaly_score},\
+			setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
+        		setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/RCE-%{matched_var_name}=%{tx.0}"
+
+
+		
+
+
+SecRule TX:PARANOIA_LEVEL "@lt 2" "phase:1,id:932013,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+SecRule TX:PARANOIA_LEVEL "@lt 2" "phase:2,id:932014,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+#
+# -= Paranoia Level 2 =- (apply only when tx.paranoia_level is sufficiently high: 2 or higher)
+#
+
+
+
+SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:1,id:932015,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:2,id:932016,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+#
+# -= Paranoia Level 3 =- (apply only when tx.paranoia_level is sufficiently high: 3 or higher)
+#
+
+
+
+SecRule TX:PARANOIA_LEVEL "@lt 4" "phase:1,id:932017,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+SecRule TX:PARANOIA_LEVEL "@lt 4" "phase:2,id:932018,nolog,pass,skipAfter:END-REQUEST-932-APPLICATION-ATTACK-RCE"
+#
+# -= Paranoia Level 4 =- (apply only when tx.paranoia_level is sufficiently high: 4 or higher)
+#
+
+
+
+#
+# -= Paranoia Levels Finished =-
+#
+SecMarker "END-REQUEST-932-APPLICATION-ATTACK-RCE"
+
