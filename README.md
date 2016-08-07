@@ -7,7 +7,7 @@ provision services for both HTTP/HTTPS.
 Change the following attribute to control the mode (block/log):
 
 ```
-default['fst_waf_testbed']['engine_mode'] = 'On'
+default['waf_testbed']['engine_mode'] = 'On'
 ```
 
 
