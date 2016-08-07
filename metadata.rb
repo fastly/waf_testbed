@@ -8,3 +8,5 @@ version '0.1.0'
 
 depends 'apt', '~> 3.0.0'
 depends 'httpd'
+depends 'python'
+depends 'git'

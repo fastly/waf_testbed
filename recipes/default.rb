@@ -5,6 +5,20 @@
 # Copyright (c) 2016 Fastly, Inc. All Rights Reserved.
 
 include_recipe 'apt'
+include_recipe 'python'
+include_recipe 'git'
+
+#
+# install framework for testings WAFS (FTW) via python
+python_pip 'ftw'
+
+#
+# Checkout the latest CRS regression tests
+git '/usr/local/owasp-crs-regressions' do
+  repository 'https://github.com/SpiderLabs/OWASP-CRS-regressions.git'
+  revision 'master'
+  action :sync
+end
 
 # NB: for debugging purposes
 package 'curl' do
