@@ -7,6 +7,10 @@ describe port(80) do
   it { should be_listening }
 end
 
+describe port(443) do
+  it { should be_listening }
+end
+
 describe package('libapache2-mod-security2') do
   it { should be_installed }
 end
