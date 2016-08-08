@@ -5,12 +5,15 @@
 # Copyright (c) 2016 Fastly, Inc. All Rights Reserved.
 
 include_recipe 'apt'
-include_recipe 'python'
 include_recipe 'git'
+include_recipe 'poise-python'
 
 #
 # install framework for testings WAFS (FTW) via python
-python_pip 'ftw'
+python_runtime '2'
+python_package 'ftw' do
+  version '1.0.1'
+end
 
 #
 # Checkout the latest CRS regression tests
