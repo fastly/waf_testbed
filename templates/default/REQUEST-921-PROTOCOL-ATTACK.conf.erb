@@ -1,11 +1,11 @@
-# ---------------------------------------------------------------
-# Core ModSecurity Rule Set ver.3.0.0
-# Copyright (C) 2006-2016 Trustwave All rights reserved.
+# ------------------------------------------------------------------------
+# OWASP ModSecurity Core Rule Set ver.3.0.0
+# Copyright (c) 2006-2016 Trustwave and contributors. All rights reserved.
 #
-# The OWASP ModSecurity Core Rule Set is distributed under 
+# The OWASP ModSecurity Core Rule Set is distributed under
 # Apache Software License (ASL) version 2
-# Please see the enclosed LICENCE file for full details.
-# ---------------------------------------------------------------
+# Please see the enclosed LICENSE file for full details.
+# ------------------------------------------------------------------------
 
 #
 # -= Paranoia Level 0 (empty) =- (apply unconditionally)
@@ -104,7 +104,7 @@ SecRule ARGS_NAMES|ARGS|XML:/* "(?:\n|\r)+(?:get|post|head|options|connect|put|d
 # [ References ]
 # http://projects.webappsec.org/HTTP-Response-Splitting
 #
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "[\n\r](?:content-(type|length)|set-cookie|location):" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "[\r\n]\W*?(?:content-(type|length)|set-cookie|location):" \
 	"msg:'HTTP Response Splitting Attack',\
 	phase:request,\
 	id:921120,\
@@ -244,32 +244,6 @@ SecRule TX:PARANOIA_LEVEL "@lt 2" "phase:2,id:921014,nolog,pass,skipAfter:END-RE
 # -= Paranoia Level 2 =- (apply only when tx.paranoia_level is sufficiently high: 2 or higher)
 #
 
-# The rule 950916 generates a lot of false positives (> 1% of requests on a given sample).
-# This rule is by default set to pass such that it only contributes to anamoly mode, change the action to block (from pass) for more paranoid installs.
-SecRule ARGS_POST|XML:/* "(\n|\r)" \
-	"msg:'HTTP Header Injection Attack via payload (CR/LF detected)',\
-	phase:request,\
-	id:921170,\
-	rev:'1',\
-	ver:'OWASP_CRS/3.0.0',\
-	maturity:'5',\
-	accuracy:'5',\
-	severity:'NOTICE',\
-	capture,\
-	tag:'application-multi',\
-	tag:'language-multi',\
-	tag:'platform-multi',\
-	tag:'attack-protocol',\
-        tag:'paranoia-level/2',\
-	t:none,t:htmlEntityDecode,t:lowercase,\
-	ctl:auditLogParts=+E,\
-	pass,\
-	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	setvar:'tx.msg=%{rule.msg}',\
-	setvar:'tx.http_violation_score=+%{tx.notice_anomaly_score}',\
-	setvar:tx.anomaly_score=+%{tx.notice_anomaly_score},\
-	setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/HEADER_INJECTION-%{matched_var_name}=%{tx.0}"
-
 
 
 SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:1,id:921015,nolog,pass,skipAfter:END-REQUEST-921-PROTOCOL-ATTACK"
@@ -277,6 +251,65 @@ SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:2,id:921016,nolog,pass,skipAfter:END-RE
 #
 # -= Paranoia Level 3 =- (apply only when tx.paranoia_level is sufficiently high: 3 or higher)
 #
+#
+
+# -=[ HTTP Parameter Polution ]=-
+#
+# [ Rule Logic ]
+# These rules look for multiple parameters with the same name.
+# 921170 counts the occurrences of the individual parameters.
+# 921180 checks if any counter is > 1.
+#
+# One HPP attack vector is to try evade signature filters by distributing the
+# attack payload across multiple parameters with the same name.
+# This works as many security devices only apply signatures to individual
+# parameter payloads, however the back-end web application may (in the case
+# of ASP.NET) consolidate all of the payloads into one thus making the
+# attack payload active.
+#
+# [ References ]
+# http://tacticalwebappsec.blogspot.com/2009/05/http-parameter-pollution.html
+# https://capec.mitre.org/data/definitions/460.html
+#
+SecRule ARGS_NAMES "." \
+        "phase:request,\
+        id:921170,\
+        rev:'2',\
+        ver:'OWASP_CRS/3.0.0',\
+        pass,\
+        nolog,\
+        tag:'application-multi',\
+        tag:'language-multi',\
+        tag:'platform-multi',\
+        tag:'attack-protocol',\
+        tag:'paranoia-level/3',\
+        tag:'CAPEC-460',\
+        setvar:'TX.paramcounter_%{MATCHED_VAR_NAME}=+1'"
+
+SecRule TX:/paramcounter_.*/ "@gt 1" \
+        "msg:'HTTP Parameter Pollution (%{TX.1})',\
+        chain,\
+        phase:request,\
+        id:921180,\
+        rev:'2',\
+        ver:'OWASP_CRS/3.0.0',\
+        maturity:'7',\
+        accuracy:'8',\
+        severity:'CRITICAL',\
+        pass,\
+        tag:'application-multi',\
+        tag:'language-multi',\
+        tag:'platform-multi',\
+        tag:'attack-protocol',\
+        tag:'paranoia-level/3',\
+        tag:'CAPEC-460',\
+        logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}'"
+                SecRule MATCHED_VARS_NAMES "TX:paramcounter_(.*)" \
+                     "capture,\
+                     setvar:tx.msg=%{rule.msg},\
+                     setvar:tx.http_violation_score=+%{tx.critical_anomaly_score},\
+                     setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
+                     setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/HTTP_PARAMETER_POLLUTION-%{matched_var_name}=%{tx.0}"
 
 
 

@@ -112,6 +112,7 @@ msc_rules_collection = [
   "RESPONSE-954-DATA-LEAKAGES-IIS.conf",
   "RESPONSE-959-BLOCKING-EVALUATION.conf",
   "RESPONSE-980-CORRELATION.conf",
+  "crawlers-user-agents.data",
   "iis-errors.data",
   "java-code-leakages.data",
   "java-errors.data",
@@ -125,8 +126,11 @@ msc_rules_collection = [
   "scanners-headers.data",
   "scanners-urls.data",
   "scanners-user-agents.data",
+  "scripting-user-agents.data",
   "sql-errors.data",
-  "sql-function-names.data"
+  "sql-function-names.data",
+  "windows-powershell-commands.data",
+  "unix-shell.data"
 ]
 
 msc_rules_collection.each do |t|

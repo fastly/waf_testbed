@@ -1,11 +1,11 @@
-# ---------------------------------------------------------------
-# Core ModSecurity Rule Set ver.3.0.0
-# Copyright (C) 2006-2016 Trustwave All rights reserved.
+# ------------------------------------------------------------------------
+# OWASP ModSecurity Core Rule Set ver.3.0.0
+# Copyright (c) 2006-2016 Trustwave and contributors. All rights reserved.
 #
-# The OWASP ModSecurity Core Rule Set is distributed under 
+# The OWASP ModSecurity Core Rule Set is distributed under
 # Apache Software License (ASL) version 2
-# Please see the enclosed LICENCE file for full details.
-# ---------------------------------------------------------------
+# Please see the enclosed LICENSE file for full details.
+# ------------------------------------------------------------------------
 
 # You should set the score to the proper threshold you would prefer. If kept at "@gt 0"
 # it will work similarly to previous Mod CRS rules and will create an event in the error_log
@@ -24,9 +24,12 @@
 # Alert and Block on High Anomaly Scores - this would block outbound data leakages
 #
 SecRule TX:OUTBOUND_ANOMALY_SCORE "@ge %{tx.outbound_anomaly_score_threshold}" \
-    "chain,phase:4,id:959100,tag:'anomaly-evaluation',t:none,deny,msg:'Outbound Anomaly Score Exceeded (score %{TX.OUTBOUND_ANOMALY_SCORE}): Last Matched Message: %{tx.msg}',logdata:'Last Matched Data: %{matched_var}'"
-	SecRule TX:ANOMALY_SCORE_BLOCKING "@streq on" chain
-		SecRule TX:/^\d/ "(.*)"
+  "phase:4,\
+  id:959100,\
+  tag:'anomaly-evaluation',\
+  t:none,\
+  deny,\
+  msg:'Outbound Anomaly Score Exceeded (Total Score: %{TX.OUTBOUND_ANOMALY_SCORE})'"
 
 
 
