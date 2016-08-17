@@ -1,11 +1,11 @@
-# ---------------------------------------------------------------
-# Core ModSecurity Rule Set ver.3.0.0
-# Copyright (C) 2006-2016 Trustwave All rights reserved.
+# ------------------------------------------------------------------------
+# OWASP ModSecurity Core Rule Set ver.3.0.0
+# Copyright (c) 2006-2016 Trustwave and contributors. All rights reserved.
 #
-# The OWASP ModSecurity Core Rule Set is distributed under 
+# The OWASP ModSecurity Core Rule Set is distributed under
 # Apache Software License (ASL) version 2
-# Please see the enclosed LICENCE file for full details.
-# ---------------------------------------------------------------
+# Please see the enclosed LICENSE file for full details.
+# ------------------------------------------------------------------------
 
 #
 # -= Paranoia Level 0 (empty) =- (apply unconditionally)
@@ -22,7 +22,7 @@ SecRule TX:PARANOIA_LEVEL "@lt 1" "phase:4,id:953012,nolog,pass,skipAfter:END-RE
 # 
 # -=[ PHP Error Message Leakage ]=-
 #
-SecRule RESPONSE_BODY "@pmf /etc/modsecurity/php-errors.data" \
+SecRule RESPONSE_BODY "@pmf php-errors.data" \
 	"msg:'PHP Information Leakage',\
 	id:953100,\
 	phase:response,\

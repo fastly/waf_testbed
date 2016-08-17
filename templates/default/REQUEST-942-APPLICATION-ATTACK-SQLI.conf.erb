@@ -1,11 +1,11 @@
-# ---------------------------------------------------------------
-# Core ModSecurity Rule Set ver.3.0.0
-# Copyright (C) 2006-2016 Trustwave All rights reserved.
+# ------------------------------------------------------------------------
+# OWASP ModSecurity Core Rule Set ver.3.0.0
+# Copyright (c) 2006-2016 Trustwave and contributors. All rights reserved.
 #
-# The OWASP ModSecurity Core Rule Set is distributed under 
+# The OWASP ModSecurity Core Rule Set is distributed under
 # Apache Software License (ASL) version 2
-# Please see the enclosed LICENCE file for full details.
-# ---------------------------------------------------------------
+# Please see the enclosed LICENSE file for full details.
+# ------------------------------------------------------------------------
 
 #
 # -= Paranoia Level 0 (empty) =- (apply unconditionally)
@@ -40,8 +40,8 @@ SecRule TX:PARANOIA_LEVEL "@lt 1" "phase:2,id:942012,nolog,pass,skipAfter:END-RE
 #
 # Ref: https://libinjection.client9.com/
 #
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "@detectSQLi" \
-  "msg:'SQL Injection Attack Detected via LibInjection',\
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "@detectSQLi" \
+  "msg:'SQL Injection Attack Detected via libinjection',\
    id:942100,\
    rev:'1',\
    ver:'OWASP_CRS/3.0.0',\
@@ -148,7 +148,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:\sexec\s+xp_cmdshell)|(?:[\"'`]\s*?!\s*?[\"'`\w])|(?:from\W+information_schema\W)|(?:(?:(?:current_)?user|database|schema|connection_id)\s*?\([^\)]*?)|(?:[\"'`];?\s*?(?:select|union|having)\s*?[^\s])|(?:\wiif\s*?\()|(?:exec\s+master\.)|(?:union select @)|(?:union[\w(\s]*?select)|(?:select.*?\w?user\()|(?:into[\s+]+(?:dump|out)file\s*?[\"'`]))" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:\s*?(?:exec|execute).*?(?:\W)xp_cmdshell)|(?:[\"'`]\s*?!\s*?[\"'`\w])|(?:from\W+information_schema\W)|(?:(?:(?:current_)?user|database|schema|connection_id)\s*?\([^\)]*?)|(?:[\"'`];?\s*?(?:select|union|having)\s*?[^\s])|(?:\wiif\s*?\()|(?:(?:exec|execute)\s+master\.)|(?:union select @)|(?:union[\w(\s]*?select)|(?:select.*?\w?user\()|(?:into[\s+]+(?:dump|out)file\s*?[\"'`]))" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -217,7 +217,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:alter\s*?\w+.*?character\s+set\s+\w+)|([\"'`];\s*?waitfor\s+time\s+[\"'`])|(?:[\"'`];.*?:\s*?goto))" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:alter\s*?\w+.*?(?:character|char)\s+set\s+\w+)|([\"'`];*?\s*?waitfor\s+(?:time|delay)\s+[\"'`])|(?:[\"'`];.*?:\s*?goto))" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -240,7 +240,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:merge.*?using\s*?\()|(execute\s*?immediate\s*?[\"'`])|(?:\W+\d*?\s*?having\s*?[^\s\-])|(?:match\s*?[\w(),+-]+\s*?against\s*?\())" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:merge.*?using\s*?\()|(execute\s*?immediate\s*?[\"'`])|(?:match\s*?[\w(),+-]+\s*?against\s*?\())" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -249,7 +249,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	capture,\
 	t:none,t:urlDecodeUni,\
 	block,\
-	msg:'Detects MATCH AGAINST, MERGE, EXECUTE IMMEDIATE and HAVING injections',\
+	msg:'Detects MATCH AGAINST, MERGE and EXECUTE IMMEDIATE injections',\
 	id:942250,\
         tag:'application-multi',\
         tag:'language-multi',\
@@ -355,7 +355,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:create\s+function\s+\w+\s+returns)|(?:;\s*?(?:select|create|rename|truncate|load|alter|delete|update|insert|desc)\s*?[\[(]?\w{2,}))" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:create\s+function\s+.+\s+returns)|(?:;\s*?(?:select|create|rename|truncate|load|alter|delete|update|insert|desc)\s*?[\[(]?\w{2,}))" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -428,7 +428,7 @@ SecRule ARGS_NAMES|ARGS|XML:/* "(^[\"'`;]+|[\"'`]+$)" \
 	msg:'SQL Injection Attack: Common Injection Testing Detected',\
 	id:942110,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	severity:'CRITICAL',\
+	severity:'WARNING',\
 	tag:'application-multi',\
 	tag:'language-multi',\
 	tag:'platform-multi',\
@@ -512,7 +512,7 @@ SecRule ARGS_NAMES|ARGS|XML:/* "(?i:([\s'\"`\(\)]*?)([\d\w]++)([\s'\"`\(\)]*?)(?
 #
 # -=[ SQL Function Names ]=-
 #
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "@pmf /etc/modsecurity/sql-function-names.data" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "@pmf sql-function-names.data" \
 	"chain,\
 	phase:request,\
 	rev:'2',\
@@ -591,7 +591,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:@.+=\s*?\(\s*?select)|(?:\d+\s*?(x?or|div|like|between|and)\s*?\d+\s*?[\-+])|(?:\/\w+;?\s+(?:having|and|x?or|div|like|between|and|select)\W)|(?:\d\s+group\s+by.+\()|(?:(?:;|#|--)\s*?(?:drop|alter))|(?:(?:;|#|--)\s*?(?:update|insert)\s*?\w{2,})|(?:[^\w]SET\s*?@\w+)|(?:(?:n?and|x?x?or|div|like|between|and|not |\|\||\&\&)[\s(]+\w+[\s)]*?[!=+]+[\s\d]*?[\"'`=()]))" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:@.+=\s*?\(\s*?select)|(?:\d+\s*?(x?or|div|like|between|and)\s*?\d+\s*?[\-+])|(?:\/\w+;?\s+(?:having|and|x?or|div|like|between|and|select)\W)|(?:\d\s+group\s+by.+\()|(?:(?:;|#|--)\s*?(?:drop|alter))|(?:(?:;|#|--)\s*?(?:update|insert)\s*?\w{2,})|(?:[^\w]SET\s*?@\w+)|(?:(?:n?and|x?x?or|div|like|between|and|not|\|\||\&\&)[\s(]+\w+[\s)]*?[!=+]+[\s\d]*?[\"'`=()]))" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -615,7 +615,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:union\s*?(?:all|distinct|[(!@]*?)?\s*?[([]*?\s*?select\s+)|(?:\w+\s+like\s+[\"'`])|(?:like\s*?[\"'`]\%)|(?:[\"'`]\s*?like\W*?[\"'`\d])|(?:[\"'`]\s*?(?:n?and|x?x?or|div|like|between|and|not |\|\||\&\&)\s+[\s\w]+=\s*?\w+\s*?having\s+)|(?:[\"'`]\s*?\*\s*?\w+\W+[\"'`])|(?:[\"'`]\s*?[^?\w\s=.,;)(]+\s*?[(@\"'`]*?\s*?\w+\W+\w)|(?:select\s+?[\[\]()\s\w\.,\"'`-]+from\s+)|(?:find_in_set\s*?\())" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:union\s*?(?:all|distinct|[(!@]*?)?\s*?[([]*?\s*?select\s+)|(?:\w+\s+like\s+[\"'`])|(?:like\s*?[\"'`]\%)|(?:[\"'`]\s*?like\W*?[\"'`\d])|(?:[\"'`]\s*?(?:n?and|x?x?or|div|like|between|and|not|\|\||\&\&)\s+[\s\w]+=\s*?\w+\s*?having\s+)|(?:[\"'`]\s*?\*\s*?\w+\W+[\"'`])|(?:[\"'`]\s*?[^?\w\s=.,;)(]+\s*?[(@\"'`]*?\s*?\w+\W+\w)|(?:select\s+?[\[\]()\s\w\.,\"'`-]+from\s+)|(?:find_in_set\s*?\())" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -711,7 +711,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
 	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:in\s*?\(+\s*?select)|(?:(?:n?and|x?x?or|div|like|between|and|not |\|\||\&\&)\s+[\s\w+]+(?:regexp\s*?\(|sounds\s+like\s*?[\"'`]|[=\d]+x))|([\"'`]\s*?\d\s*?(?:--|#))|(?:[\"'`][\%&<>^=]+\d\s*?(=|x?or|div|like|between|and))|(?:[\"'`]\W+[\w+-]+\s*?=\s*?\d\W+[\"'`])|(?:[\"'`]\s*?is\s*?\d.+[\"'`]?\w)|(?:[\"'`]\|?[\w-]{3,}[^\w\s.,]+[\"'`])|(?:[\"'`]\s*?is\s*?[\d.]+\s*?\W.*?[\"'`]))" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:(?:in\s*?\(+\s*?select)|(?:(?:n?and|x?x?or|div|like|between|and|not|\|\||\&\&)\s+[\s\w+]+(?:regexp\s*?\(|sounds\s+like\s*?[\"'`]|[=\d]+x))|([\"'`]\s*?\d\s*?(?:--|#))|(?:[\"'`][\%&<>^=]+\d\s*?(=|x?or|div|like|between|and))|(?:[\"'`]\W+[\w+-]+\s*?=\s*?\d\W+[\"'`])|(?:[\"'`]\s*?is\s*?\d.+[\"'`]?\w)|(?:[\"'`]\|?[\w-]{3,}[^\w\s.,]+[\"'`])|(?:[\"'`]\s*?is\s*?[\d.]+\s*?\W.*?[\"'`]))" \
 	"phase:request,\
         rev:'2',\
         ver:'OWASP_CRS/3.0.0',\
@@ -778,7 +778,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         tag:'PCI/6.5.2',\
         tag:'paranoia-level/2',\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        severity:'2',\
+        severity:'CRITICAL',\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.sql_injection_score=+%{tx.critical_anomaly_score},\
         setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
@@ -803,7 +803,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         tag:'PCI/6.5.2',\
         tag:'paranoia-level/2',\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        severity:'2',\
+        severity:'CRITICAL',\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.sql_injection_score=+%{tx.critical_anomaly_score},\
         setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
@@ -828,7 +828,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         tag:'PCI/6.5.2',\
         tag:'paranoia-level/2',\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        severity:'2',\
+        severity:'CRITICAL',\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.sql_injection_score=+%{tx.critical_anomaly_score},\
         setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
@@ -853,7 +853,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         tag:'PCI/6.5.2',\
         tag:'paranoia-level/2',\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        severity:'2',\
+        severity:'CRITICAL',\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.sql_injection_score=+%{tx.critical_anomaly_score},\
         setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
@@ -891,7 +891,7 @@ SecRule ARGS_NAMES|ARGS|XML:/* "([\~\!\@\#\$\%\^\&\*\(\)\-\+\=\{\}\[\]\|\:\;\"\'
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
         tag:'paranoia-level/2',\
         setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},\
-        setvar:tx.sql_injection_score=+1,\
+        setvar:tx.sql_injection_score=+%{tx.warning_anomaly_score},\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/RESTRICTED_SQLI_CHARS-%{matched_var_name}=%{tx.0}"
 
@@ -928,7 +928,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         t:none,t:urlDecodeUni,\
         block,\
         msg:'SQL Comment Sequence Detected.',\
-        severity:'2',\
+        severity:'CRITICAL',\
         capture,\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
@@ -938,7 +938,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         tag:'PCI/6.5.2',\
         tag:'paranoia-level/2',\
         setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
-        setvar:tx.sql_injection_score=+1,\
+        setvar:tx.sql_injection_score=+%{tx.critical_anomaly_score},\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQL_INJECTION-%{matched_var_name}=%{tx.0}"
 
@@ -958,7 +958,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         block,\
         msg:'SQL Hex Encoding Identified',\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        severity:'2',\
+        severity:'CRITICAL',\
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
         tag:'WASCTC/WASC-19',\
         tag:'OWASP_TOP_10/A1',\
@@ -971,36 +971,47 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQL_INJECTION-%{matched_var_name}=%{tx.0}"
 
 
-#
-# -=[ Heuristic Checks ]=-
-#
-# [ Repeatative Non-Word Chars ]
-#
-# This rule attempts to identify when multiple (4 or more) non-word characters are repeated in sequence
-#
-SecRule ARGS "\W{4,}" \
-        "phase:request,\
-        capture,\
-        t:none,t:urlDecodeUni,\
-        block,\
-        id:942460,\
-        rev:'2',\
-        ver:'OWASP_CRS/3.0.0',\
-        maturity:'9',\
-        accuracy:'8',\
-        msg:'Meta-Character Anomaly Detection Alert - Repetative Non-Word Characters',\
-        logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        tag:'paranoia-level/2',\
-        setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},setvar:'tx.msg=%{rule.msg}',\
-        setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/COMMAND_INJECTION-%{matched_var_name}=%{tx.0}"
-
-
 
 SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:1,id:942015,nolog,pass,skipAfter:END-REQUEST-942-APPLICATION-ATTACK-SQLI"
 SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:2,id:942016,nolog,pass,skipAfter:END-REQUEST-942-APPLICATION-ATTACK-SQLI"
 #
 # -= Paranoia Level 3 =- (apply only when tx.paranoia_level is sufficiently high: 3 or higher)
 #
+
+
+#
+# [ SQL HAVING queries ]
+#
+# This pattern was split off from rule 942250 due to frequent
+# false positives in English text. Testing showed that SQL
+# injections with HAVING should be detected by libinjection
+# (rule 942100).
+#
+# This is a stricter sibling of rule 942250.
+#
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i)\W+\d*?\s*?having\s*?[^\s\-]" \
+	"phase:request,\
+	rev:'1',\
+	ver:'OWASP_CRS/3.0.0',\
+	maturity:'9',\
+	accuracy:'6',\
+	capture,\
+	t:none,t:urlDecodeUni,\
+	block,\
+	msg:'Detects HAVING injections',\
+	id:942251,\
+	tag:'application-multi',\
+	tag:'language-multi',\
+	tag:'platform-multi',\
+	tag:'attack-sqli',\
+	tag:'paranoia-level/3',\
+	tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
+	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
+	severity:'CRITICAL',\
+	setvar:'tx.msg=%{rule.msg}',\
+	setvar:tx.sql_injection_score=+%{tx.critical_anomaly_score},\
+	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
+	setvar:'tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/SQLI-%{matched_var_name}=%{tx.0}'"
 
 #
 # [ SQL Injection Character Anomaly Usage ]
@@ -1036,7 +1047,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|!REQ
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
         tag:'paranoia-level/3',\
         setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},\
-        setvar:tx.sql_injection_score=+1,\
+        setvar:tx.sql_injection_score=+%{tx.warning_anomaly_score},\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/RESTRICTED_SQLI_CHARS-%{matched_var_name}=%{tx.0}"
 
@@ -1060,10 +1071,35 @@ SecRule ARGS_NAMES|ARGS|XML:/* "([\~\!\@\#\$\%\^\&\*\(\)\-\+\=\{\}\[\]\|\:\;\"\'
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
         tag:'paranoia-level/3',\
         setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},\
-        setvar:tx.sql_injection_score=+1,\
+        setvar:tx.sql_injection_score=+%{tx.warning_anomaly_score},\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/RESTRICTED_SQLI_CHARS-%{matched_var_name}=%{tx.0}"
 
+
+#
+# [ Repetitive Non-Word Characters ]
+#
+# This rule attempts to identify when multiple (4 or more) non-word characters
+# are repeated in sequence.
+#
+# The pattern may occur in some normal texts, e.g. "foo...." will match.
+#
+SecRule ARGS "\W{4,}" \
+        "phase:request,\
+        capture,\
+        t:none,t:urlDecodeUni,\
+        block,\
+        id:942460,\
+        rev:'2',\
+        ver:'OWASP_CRS/3.0.0',\
+        maturity:'9',\
+        accuracy:'8',\
+        severity:'WARNING',\
+        tag:'paranoia-level/3',\
+        msg:'Meta-Character Anomaly Detection Alert - Repetitive Non-Word Characters',\
+        logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
+        setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},setvar:'tx.msg=%{rule.msg}',\
+        setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/COMMAND_INJECTION-%{matched_var_name}=%{tx.0}"
 
 
 SecRule TX:PARANOIA_LEVEL "@lt 4" "phase:1,id:942017,nolog,pass,skipAfter:END-REQUEST-942-APPLICATION-ATTACK-SQLI"
@@ -1093,7 +1129,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|!REQ
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
         tag:'paranoia-level/4',\
         setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},\
-        setvar:tx.sql_injection_score=+1,\
+        setvar:tx.sql_injection_score=+%{tx.warning_anomaly_score},\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/RESTRICTED_SQLI_CHARS-%{matched_var_name}=%{tx.0}"
 
@@ -1117,7 +1153,7 @@ SecRule ARGS_NAMES|ARGS|XML:/* "([\~\!\@\#\$\%\^\&\*\(\)\-\+\=\{\}\[\]\|\:\;\"\'
         tag:'OWASP_CRS/WEB_ATTACK/SQL_INJECTION',\
         tag:'paranoia-level/4',\
         setvar:tx.anomaly_score=+%{tx.warning_anomaly_score},\
-        setvar:tx.sql_injection_score=+1,\
+        setvar:tx.sql_injection_score=+%{tx.warning_anomaly_score},\
         setvar:'tx.msg=%{rule.msg}',\
         setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/RESTRICTED_SQLI_CHARS-%{matched_var_name}=%{tx.0}"
 
