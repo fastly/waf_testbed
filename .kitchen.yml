@@ -5,6 +5,10 @@ driver:
 provisioner:
   name: chef_zero
 
+transport:
+  forward_agent: true
+  username: vagrant
+
 verifier:
   name: inspec
   format: doc
