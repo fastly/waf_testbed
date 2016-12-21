@@ -64,6 +64,11 @@ template '/usr/local/waftest/index.html' do
   notifies :restart, 'httpd_service[default]'
 end
 
+httpd_config "crs-setup" do
+  source 'crs-setup.conf.erb'
+  notifies :restart, 'httpd_service[default]'
+end
+
 httpd_config "modsecurity" do
   source 'modsecurity.conf.erb'
   notifies :restart, 'httpd_service[default]'
@@ -90,7 +95,10 @@ template '/etc/modsecurity/unicode.mapping' do
 end
 
 msc_rules_collection = [
-  "REQUEST-901-COMMON-EXCEPTIONS.conf",
+  "REQUEST-901-INITIALIZATION.conf",
+  "REQUEST-903.9001-DRUPAL-EXCLUSION-RULES.conf",
+  "REQUEST-903.9002-WORDPRESS-EXCLUSION-RULES.conf",
+  "REQUEST-905-COMMON-EXCEPTIONS.conf",
   "REQUEST-910-IP-REPUTATION.conf",
   "REQUEST-911-METHOD-ENFORCEMENT.conf",
   "REQUEST-912-DOS-PROTECTION.conf",
@@ -117,20 +125,20 @@ msc_rules_collection = [
   "java-code-leakages.data",
   "java-errors.data",
   "lfi-os-files.data",
-  "os-commands.data",
   "php-config-directives.data",
   "php-errors.data",
   "php-function-names-933150.data",
   "php-function-names-933151.data",
   "php-variables.data",
+  "restricted-files.data",
   "scanners-headers.data",
   "scanners-urls.data",
   "scanners-user-agents.data",
   "scripting-user-agents.data",
   "sql-errors.data",
   "sql-function-names.data",
-  "windows-powershell-commands.data",
-  "unix-shell.data"
+  "unix-shell.data",
+  "windows-powershell-commands.data"
 ]
 
 msc_rules_collection.each do |t|
