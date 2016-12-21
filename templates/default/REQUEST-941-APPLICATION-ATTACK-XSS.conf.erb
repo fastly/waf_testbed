@@ -26,36 +26,35 @@ SecRule TX:PARANOIA_LEVEL "@lt 1" "phase:2,id:941012,nolog,pass,skipAfter:END-RE
 # Ref: https://libinjection.client9.com/
 # Ref: https://speakerdeck.com/ngalbreath/libinjection-from-sqli-to-xss
 #
-# NB: disable this rule. This won't work with this version of apache.
-#
+# NB: disabling due to version of apache in the http cookbook
 #SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "@detectXSS" \
-	#"msg:'XSS Attack Detected via libinjection',\
-	#id:941100,\
-	#phase:request,\
-	#severity:'CRITICAL',\
-	#rev:'2',\
-	#ver:'OWASP_CRS/3.0.0',\
-	#maturity:'1',\
-	#accuracy:'9',\
-	#t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
-	#block,\
-	#ctl:auditLogParts=+E,\
-	#capture,\
-	#tag:'application-multi',\
-	#tag:'language-multi',\
-	#tag:'platform-multi',\
-	#tag:'attack-xss',\
-	#tag:'OWASP_CRS/WEB_ATTACK/XSS',\
-	#tag:'WASCTC/WASC-8',\
-	#tag:'WASCTC/WASC-22',\
-	#tag:'OWASP_TOP_10/A3',\
-	#tag:'OWASP_AppSensor/IE1',\
-	#tag:'CAPEC-242',\
-	#logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	#setvar:'tx.msg=%{rule.msg}',\
-	#setvar:tx.xss_score=+%{tx.critical_anomaly_score},\
-	#setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
-	#setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/XSS-%{matched_var_name}=%{tx.0}"
+#	"msg:'XSS Attack Detected via libinjection',\
+#	id:941100,\
+#	phase:request,\
+#	severity:'CRITICAL',\
+#	rev:'2',\
+#	ver:'OWASP_CRS/3.0.0',\
+#	maturity:'1',\
+#	accuracy:'9',\
+#	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
+#	block,\
+#	ctl:auditLogParts=+E,\
+#	capture,\
+#	tag:'application-multi',\
+#	tag:'language-multi',\
+#	tag:'platform-multi',\
+#	tag:'attack-xss',\
+#	tag:'OWASP_CRS/WEB_ATTACK/XSS',\
+#	tag:'WASCTC/WASC-8',\
+#	tag:'WASCTC/WASC-22',\
+#	tag:'OWASP_TOP_10/A3',\
+#	tag:'OWASP_AppSensor/IE1',\
+#	tag:'CAPEC-242',\
+#	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
+#	setvar:'tx.msg=%{rule.msg}',\
+#	setvar:tx.xss_score=+%{tx.critical_anomaly_score},\
+#	setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
+#	setvar:tx.%{rule.id}-OWASP_CRS/WEB_ATTACK/XSS-%{matched_var_name}=%{tx.0}"
 
 
 #
@@ -63,7 +62,7 @@ SecRule TX:PARANOIA_LEVEL "@lt 1" "phase:2,id:941012,nolog,pass,skipAfter:END-RE
 # http://xssplayground.net23.net/xssfilter.html
 # script tag based XSS vectors, e.g., <script> alert(1)</script>
 #
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "(?i)(<script[^>]*>[\s\S]*?)" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "(?i)([<＜]script[^>＞]*[>＞][\s\S]*?)" \
 	"msg:'XSS Filter - Category 1: Script Tag Vector',\
 	id:941110,\
 	phase:request,\
@@ -72,7 +71,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'4',\
 	accuracy:'9',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	capture,\
@@ -106,7 +105,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'4',\
 	accuracy:'8',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	capture,\
@@ -130,7 +129,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 #
 # -=[ XSS Filters - Category 3 ]=-
 #
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "(?i)[\s\S](?:x(?:link:href|html|mlns)|!ENTITY.*?SYSTEM|data:text\/html|pattern(?=.*?=)|formaction|\@import|base64)[\s\S]" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|ARGS_NAMES|ARGS|XML:/* "(?i)[\s\S](?:x(?:link:href|html|mlns)|!ENTITY.*?SYSTEM|data:text\/html|pattern(?=.*?=)|formaction|\@import|base64)\b" \
 	"msg:'XSS Filter - Category 3: Attribute Vector',\
 	id:941130,\
 	phase:request,\
@@ -139,7 +138,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'1',\
 	accuracy:'8',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	capture,\
@@ -164,12 +163,12 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 # -=[ XSS Filters - Category 4 ]=-
 # XSS vectors making use of javascript uri and tags, e.g., <p style="background:url(javascript:alert(1))">
 #
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "(?i)(?:<(?:(?:apple|objec)t|isindex|embed|style|form|meta)[^>]*?>[\s\S]*?|(?:=|U\s*?R\s*?L\s*?\()\s*?[^>]*?\s*?S\s*?C\s*?R\s*?I\s*?P\s*?T\s*?:)" \
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "(?i)(?:<(?:(?:apple|objec)t|isindex|embed|style|form|meta)\b[^>]*?>[\s\S]*?|(?:=|U\s*?R\s*?L\s*?\()\s*?[^>]*?\s*?S\s*?C\s*?R\s*?I\s*?P\s*?T\s*?:)" \
 	"msg:'XSS Filter - Category 4: Javascript URI Vector',\
 	id:941140,\
 	severity:'CRITICAL',\
 	phase:request,\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	rev:'3',\
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'1',\
@@ -197,11 +196,11 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 #
 # -=[ XSS Filters - Category 5 ]=-
 # HTML attribues - src, style and href
-# 
+#
 # These are only checked/enforced if the Admin has set -
 # setvar:tx.allow_html=0
-# 
-SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|REQUEST_HEADERS:Referer|ARGS_NAMES|ARGS|XML:/* "(?i)\b(?:s(?:tyle|rc)|href)\b[\s\S]*?=" \
+#
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_HEADERS:User-Agent|ARGS_NAMES|ARGS|XML:/* "(?i)\b(?:s(?:tyle|rc)|href)\b[\s\S]*?=" \
 	"msg:'XSS Filter - Category 5: Disallowed HTML Attributes',\
 	id:941150,\
 	phase:request,\
@@ -210,7 +209,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'1',\
 	accuracy:'8',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	capture,\
@@ -235,7 +234,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 
 #
 # -=[ NoScript XSS Filters ]=-
-# Ref: http://noscript.net/ 
+# Ref: http://noscript.net/
 #
 # [NoScript InjectionChecker] HTML injection
 #
@@ -244,7 +243,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 	id:941160,\
 	severity:'CRITICAL',\
 	phase:request,\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	rev:'2',\
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'1',\
@@ -277,7 +276,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 	id:941170,\
 	severity:'CRITICAL',\
 	phase:request,\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	rev:'3',\
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'1',\
@@ -304,14 +303,14 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|REQUEST_H
 
 #
 # [Blacklist Keywords from Node-Validator]
-# https://raw.github.com/chriso/node-validator/master/validator.js 
+# https://raw.github.com/chriso/node-validator/master/validator.js
 #
 SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "@pm document.cookie document.write .parentnode .innerhtml window.location -moz-binding <!-- --> <![cdata[" \
 	"msg:'Node-Validator Blacklist Keywords',\
 	id:941180,\
 	severity:'CRITICAL',\
 	phase:request,\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:lowercase,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:lowercase,t:removeNulls,\
 	rev:'2',\
 	ver:'OWASP_CRS/3.0.0',\
 	maturity:'1',\
@@ -340,7 +339,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 # -=[ XSS Filters from IE ]=-
 # Ref: http://blogs.technet.com/srd/archive/2008/08/18/ie-8-xss-filter-architecture-implementation.aspx
 # Ref: http://xss.cx/examples/ie/internet-exploror-ie9-xss-filter-rules-example-regexp-mshtmldll.txt
-# 
+#
 SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* "(?i:<style.*?>.*?((@[i\\\\])|(([:=]|(&#x?0*((58)|(3A)|(61)|(3D));?)).*?([(\\\\]|(&#x?0*((40)|(28)|(92)|(5C));?)))))" \
 	"phase:request,\
 	rev:'3',\
@@ -348,9 +347,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941190,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
 	tag:'application-multi',\
@@ -376,9 +376,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941200,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -405,9 +406,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941210,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -434,9 +436,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941220,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -463,9 +466,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941230,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -492,9 +496,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941240,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:lowercase,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:lowercase,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -521,9 +526,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941250,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -550,9 +556,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941260,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -579,9 +586,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941270,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -608,9 +616,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941280,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -637,9 +646,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941290,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -666,9 +676,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'8',\
 	accuracy:'8',\
 	id:941300,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:removeNulls,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,\
+	t:none,t:utf8toUnicode,t:urlDecodeUni,t:htmlEntityDecode,t:jsDecode,t:cssDecode,t:removeNulls,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'IE XSS Filters - Attack Detected.',\
@@ -689,7 +700,7 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 
 #
 # https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet
-# US-ASCII encoding bypass listed on XSS filter evasion 
+# US-ASCII encoding bypass listed on XSS filter evasion
 # Reported by Mazin Ahmed
 #
 
@@ -700,9 +711,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
 	maturity:'7',\
 	accuracy:'8',\
 	id:941310,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:lowercase,t:urlDecode,t:htmlEntityDecode,t:jsDecode,\
+	t:none,t:urlDecodeUni,t:lowercase,t:urlDecode,t:htmlEntityDecode,t:jsDecode,\
 	block,\
 	ctl:auditLogParts=+E,\
 	msg:'US-ASCII Malformed Encoding XSS Filter - Attack Detected.',\
@@ -734,9 +746,10 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAME
         maturity:'7',\
         accuracy:'8',\
         id:941350,\
+        severity:'CRITICAL',\
         capture,\
         logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-        t:none,t:lowercase,t:urlDecode,t:htmlEntityDecode,t:jsDecode,\
+        t:none,t:urlDecodeUni,t:lowercase,t:urlDecode,t:htmlEntityDecode,t:jsDecode,\
         block,\
         ctl:auditLogParts=+E,\
         msg:'UTF-7 Encoding IE XSS - Attack Detected.',\
@@ -830,11 +843,16 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
 	maturity:'8',\
 	accuracy:'8',\
 	id:941320,\
+	severity:'CRITICAL',\
 	capture,\
-	t:none,t:jsDecode,t:lowercase,\
+	t:none,t:urlDecodeUni,t:jsDecode,t:lowercase,\
 	block,\
 	msg:'Possible XSS Attack Detected - HTML Tag Handler',\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
+	tag:'application-multi',\
+	tag:'language-multi',\
+	tag:'platform-multi',\
+	tag:'attack-xss',\
 	tag:'OWASP_CRS/WEB_ATTACK/XSS',\
 	tag:'WASCTC/WASC-8',\
 	tag:'WASCTC/WASC-22',\
@@ -854,11 +872,16 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
 	maturity:'8',\
 	accuracy:'8',\
 	id:941330,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:htmlEntityDecode,t:compressWhiteSpace,\
+	t:none,t:urlDecodeUni,t:htmlEntityDecode,t:compressWhiteSpace,\
 	block,\
 	msg:'IE XSS Filters - Attack Detected.',\
+	tag:'application-multi',\
+	tag:'language-multi',\
+	tag:'platform-multi',\
+	tag:'attack-xss',\
 	tag:'OWASP_CRS/WEB_ATTACK/XSS',\
 	tag:'WASCTC/WASC-8',\
 	tag:'WASCTC/WASC-22',\
@@ -878,11 +901,16 @@ SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|!REQUEST_COOKIES:/_pk_ref/|REQU
 	maturity:'8',\
 	accuracy:'8',\
 	id:941340,\
+	severity:'CRITICAL',\
 	capture,\
 	logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}',\
-	t:none,t:htmlEntityDecode,t:compressWhiteSpace,\
+	t:none,t:urlDecodeUni,t:htmlEntityDecode,t:compressWhiteSpace,\
 	block,\
 	msg:'IE XSS Filters - Attack Detected.',\
+	tag:'application-multi',\
+	tag:'language-multi',\
+	tag:'platform-multi',\
+	tag:'attack-xss',\
 	tag:'OWASP_CRS/WEB_ATTACK/XSS',\
 	tag:'WASCTC/WASC-8',\
 	tag:'WASCTC/WASC-22',\
