@@ -2,6 +2,7 @@
 # apache2+mod_security vagrant box
 #
 Vagrant.configure(2) do |config|
+  config.ssh.forward_agent = true
   config.vm.define 'modsec0' do |modsec_conf|
     modsec_conf.vm.box = 'ubuntu/trusty64'
     modsec_conf.berkshelf.enabled = true
