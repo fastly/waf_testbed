@@ -4,6 +4,10 @@ Cookbook to create a WAF rule testing environment. This cookbook will provision 
 modsecurity and version 3 of the OWASP core ruleset. In addition, this cookbook will
 provision services for both HTTP/HTTPS.
 
+To use the Vagrantfile, you will need the Berksfile plugin installed:
+
+	% vagrant plugin install vagrant-berkshelf
+
 Change the following attribute to control the mode (block/log):
 
 ```
