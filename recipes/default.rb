@@ -35,7 +35,7 @@ end
 
 #
 # Checkout the latest CRS regression tests
-git '/usr/local/owasp-crs-regressions' do
+git '/opt/owasp-crs-regressions' do
   repository 'https://github.com/SpiderLabs/OWASP-CRS-regressions.git'
   revision 'master'
   action :sync
