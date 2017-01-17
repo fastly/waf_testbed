@@ -11,9 +11,27 @@ include_recipe 'poise-python'
 #
 # install framework for testings WAFS (FTW) via python
 python_runtime '2'
-python_package 'ftw' do
-  version '1.0.1'
+
+# use an experimental FTW branc
+# if enabled, use a specified ftw branch instead of installing from pip 
+if node['waf_testbed']['ftw']['use_git'] then
+  git '/opt/ftw' do
+    repository 'https://github.com/fastly/ftw.git'
+    branch node['waf_testbed']['ftw']['branch']
+    action :sync
+    notifies :run, 'python_execute[install ftw]', :immediately
+  end
+  python_execute 'install ftw' do
+    action :nothing
+    command '-m pip install -e .'
+    cwd '/opt/ftw'
+  end
+else
+  python_package 'ftw' do
+    version node['waf_testbed']['ftw']['pip_version']
+  end
 end
+
 
 #
 # Checkout the latest CRS regression tests
@@ -21,6 +39,7 @@ git '/usr/local/owasp-crs-regressions' do
   repository 'https://github.com/SpiderLabs/OWASP-CRS-regressions.git'
   revision 'master'
   action :sync
+  branch 
 end
 
 # NB: for debugging purposes
