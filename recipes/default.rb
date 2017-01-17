@@ -39,7 +39,6 @@ git '/opt/owasp-crs-regressions' do
   repository 'https://github.com/SpiderLabs/OWASP-CRS-regressions.git'
   revision 'master'
   action :sync
-  branch 
 end
 
 # NB: for debugging purposes
