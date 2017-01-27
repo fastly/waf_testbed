@@ -58,6 +58,10 @@ httpd_module 'unique_id' do
   action :create
 end
 
+httpd_module 'headers' do
+  action :create
+end
+
 httpd_module 'ssl' do
   action :create
 end
@@ -89,6 +93,11 @@ end
 
 httpd_config "modsecurity" do
   source 'modsecurity.conf.erb'
+  notifies :restart, 'httpd_service[default]'
+end
+
+httpd_config "headers" do
+  source 'headers.conf.erb'
   notifies :restart, 'httpd_service[default]'
 end
 
