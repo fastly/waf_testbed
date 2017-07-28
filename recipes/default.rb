@@ -12,7 +12,7 @@ include_recipe 'poise-python'
 # install framework for testings WAFS (FTW) via python
 python_runtime '2'
 
-# use an experimental FTW branc
+# use an experimental FTW branch
 # if enabled, use a specified ftw branch instead of installing from pip 
 if node['waf_testbed']['ftw']['use_git'] then
   git '/opt/ftw' do
