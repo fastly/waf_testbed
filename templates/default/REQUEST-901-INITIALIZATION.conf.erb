@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------
-# OWASP ModSecurity Core Rule Set ver.3.0.0
+# OWASP ModSecurity Core Rule Set ver.3.0.2
 # Copyright (c) 2006-2016 Trustwave and contributors. All rights reserved.
 #
 # The OWASP ModSecurity Core Rule Set is distributed under
@@ -25,8 +25,7 @@
 #
 # Ref: https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual#wiki-SecComponentSignature
 #
-SecComponentSignature "OWASP_CRS/3.0.0"
-
+SecComponentSignature "OWASP_CRS/3.0.2"
 
 #
 # -=[ Default setup values ]=-
@@ -161,7 +160,7 @@ SecRule &TX:allowed_request_content_type "@eq 0" \
     phase:1,\
     pass,\
     nolog,\
-    setvar:'tx.allowed_request_content_type=application/x-www-form-urlencoded|multipart/form-data|text/xml|application/xml|application/x-amf|application/json|text/plain'"
+    setvar:'tx.allowed_request_content_type=application/x-www-form-urlencoded|multipart/form-data|text/xml|application/xml|application/soap+xml|application/x-amf|application/json|application/octet-stream|text/plain'"
 
 # Default HTTP policy: allowed_http_versions (rule 900230)
 SecRule &TX:allowed_http_versions "@eq 0" \
@@ -241,25 +240,7 @@ SecRule REQUEST_HEADERS:User-Agent "^(.*)$" \
   nolog, \
   pass"
 
-SecRule REQUEST_HEADERS:x-forwarded-for "^\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b" \
-  "id:901319, \
-  phase:1, \
-  t:none, \
-  capture, \
-  setvar:tx.real_ip=%{tx.1}, \
-  nolog, \
-  pass"
-
-SecRule &TX:REAL_IP "!@eq 0" \
-  "id:901320, \
-  phase:1, \
-  t:none, \
-  initcol:global=global, \
-  initcol:ip=%{tx.real_ip}_%{tx.ua_hash}, \
-  nolog, \
-  pass"
-
-SecRule &TX:REAL_IP "@eq 0" \
+SecAction \
   "id:901321, \
   phase:1, \
   t:none, \

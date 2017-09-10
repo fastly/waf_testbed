@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------
-# OWASP ModSecurity Core Rule Set ver.3.0.0
+# OWASP ModSecurity Core Rule Set ver.3.0.2
 # Copyright (c) 2006-2016 Trustwave and contributors. All rights reserved.
 #
 # The OWASP ModSecurity Core Rule Set is distributed under
@@ -80,12 +80,24 @@ SecRule REQUEST_LINE "!^(?i:(?:[a-z]{3,10}\s+(?:\w{3,7}?://[\w\-\./]*(?::\d+)?)?
 # -=[ Rule Logic ]=-
 # These rules check for the existence of the ' " ; = meta-characters in
 # either the file or file name variables.
+# HTML entities may lead to false positives, why they are allowed on PL1.
+# Negative look behind assertions allow frequently used entities &_;
+#
+# -=[ Targets, characters and html entities ]=-
+#
+# 920120: PL1 : FILES_NAMES, FILES
+#         ['\";=] but allowed:
+#         &[aAoOuUyY]uml); &[aAeEiIoOuU]circ; &[eEiIoOuUyY]acute;
+#         &[aAeEiIoOuU]grave; &[cC]cedil; &[aAnNoO]tilde; &amp; &apos;
+#
+# 920121: PL2 : FILES_NAMES, FILES
+#         ['\";=] : ' " ; = meta-characters
 #
 # -=[ References ]=-
 # https://www.owasp.org/index.php/ModSecurity_CRS_RuleID-960000
 # http://www.ietf.org/rfc/rfc2183.txt
 #
-SecRule FILES_NAMES|FILES "['\";=]" \
+SecRule FILES_NAMES|FILES "(?<!&(?:[aAoOuUyY]uml)|&(?:[aAeEiIoOuU]circ)|&(?:[eEiIoOuUyY]acute)|&(?:[aAeEiIoOuU]grave)|&(?:[cC]cedil)|&(?:[aAnNoO]tilde)|&(?:amp)|&(?:apos));|['\"=]" \
   "msg:'Attempted multipart/form-data bypass',\
   severity:'CRITICAL',\
   id:920120,\
@@ -474,11 +486,16 @@ SecRule TX:CRS_VALIDATE_UTF8_ENCODING "@eq 1" \
 # -=[ Rule Logic ]=-
 # This rule looks for full-width encoding by looking for %u followed by 2 'f'
 # characters and then 2 hex characters. It is a vulnerability that affected
-# IIS circa 2007
+# IIS circa 2007.
+# The rule will trigger on %uXXXX formatted chars that are full or half
+# width, as explained above. This %uXXXX format is passed as a raw parameter
+# and is (seemingly only) accepted by IIS (5.0, 6.0, 7.0, and 8.0). Other
+# webservers will only process unicode chars presented as hex UTF-8 bytes.
 #
 # -=[ References ]=-
 # http://www.kb.cert.org/vuls/id/739224
 # https://www.checkpoint.com/defense/advisories/public/2007/cpai-2007-201.html
+# https://github.com/SpiderLabs/owasp-modsecurity-crs/issues/719
 #
 SecRule REQUEST_URI|REQUEST_BODY "\%u[fF]{2}[0-9a-fA-F]{2}" \
   "msg:'Unicode Full/Half Width Abuse Attack Attempt',\
@@ -858,7 +875,7 @@ SecRule &TX:ARG_NAME_LENGTH "@eq 1" \
         setvar:tx.%{rule.id}-OWASP_CRS/POLICY/SIZE_LIMIT-%{matched_var_name}=%{matched_var}"
 
 #
-# Limit value name length
+# Limit argument value length
 #
 SecRule &TX:ARG_LENGTH "@eq 1" \
   "chain,\
@@ -1312,6 +1329,33 @@ SecRule &REQUEST_HEADERS:User-Agent "@eq 0" \
    setvar:'tx.msg=%{rule.msg}',\
    setvar:tx.anomaly_score=+%{tx.notice_anomaly_score},\
    setvar:tx.%{rule.id}-OWASP_CRS/PROTOCOL_VIOLATION/MISSING_HEADER-%{matched_var_name}=%{matched_var}"
+
+
+#
+# PL2: This is a stricter sibling of 920120.
+#
+SecRule FILES_NAMES|FILES "['\";=]" \
+  "msg:'Attempted multipart/form-data bypass',\
+  severity:'CRITICAL',\
+  id:920121,\
+  ver:'OWASP_CRS/3.0.0',\
+  rev:'1',\
+  maturity:'9',\
+  accuracy:'7',\
+  logdata:'%{matched_var}',\
+  phase:request,\
+  block,\
+  t:none,t:urlDecodeUni,\
+  tag:'application-multi',\
+  tag:'language-multi',\
+  tag:'platform-multi',\
+  tag:'attack-protocol',\
+  tag:'OWASP_CRS/PROTOCOL_VIOLATION/INVALID_REQ',\
+  tag:'CAPEC-272',\
+  tag:'paranoia-level/2',\
+  setvar:'tx.msg=%{rule.msg}',\
+  setvar:tx.anomaly_score=+%{tx.critical_anomaly_score},\
+  setvar:'tx.%{rule.id}-OWASP_CRS/PROTOCOL_VIOLATION/INVALID_REQ-%{matched_var_name}=%{matched_var}'"
 
 
 SecRule TX:PARANOIA_LEVEL "@lt 3" "phase:1,id:920015,nolog,pass,skipAfter:END-REQUEST-920-PROTOCOL-ENFORCEMENT"
