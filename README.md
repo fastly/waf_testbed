@@ -3,7 +3,7 @@
 ## Purpose
 
 Cookbook to create a WAF rule testing environment. This cookbook will provision apache2,
-modsecurity and version 3 of the OWASP core ruleset. In addition, this cookbook will
+modsecurity and version 3.0.2 of the OWASP core ruleset. In addition, this cookbook will
 provision services for both HTTP/HTTPS. This cookbook installs the Framework for Testing WAFs
 (FTW) package in additional to the OWASP core ruleset regression tests (projects linked below).
 
